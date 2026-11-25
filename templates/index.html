@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — TMS{% endblock %}
+
+{% block content %}
+<!-- ── Topbar ──────────────────────────────────────────────────────────────── -->
+<div class="topbar">
+  <div class="topbar-title">
+    <h1>🏠 Dashboard</h1>
+    <p>Overview of your home medicine cabinet</p>
+  </div>
+</div>
+
+<!-- ── Page Content ────────────────────────────────────────────────────────── -->
+<div class="page-content">
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card accent">
+      <div class="stat-icon">💊</div>
+      <div class="stat-info">
+        <div class="stat-value" id="stat-total">—</div>
+        <div class="stat-label">Total Tablets</div>
+      </div>
+    </div>
+    <div class="stat-card danger">
+      <div class="stat-icon">📦</div>
+      <div class="stat-info">
+        <div class="stat-value" id="stat-out">—</div>
+        <div class="stat-label">Out of Stock</div>
+      </div>
+    </div>
+    <div class="stat-card warning">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-info">
+        <div class="stat-value" id="stat-low">—</div>
+        <div class="stat-label">Low Stock (≤10)</div>
+      </div>
+    </div>
+    <div class="stat-card warning">
+      <div class="stat-icon">🕐</div>
+      <div class="stat-info">
+        <div class="stat-value" id="stat-expiring">—</div>
+        <div class="stat-label">Expiring Soon</div>
+      </div>
+    </div>
+    <div class="stat-card danger">
+      <div class="stat-icon">🔴</div>
+      <div class="stat-info">
+        <div class="stat-value" id="stat-expired">—</div>
+        <div class="stat-label">Expired</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two columns: Alerts + Expiry -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+
+    <!-- Low Stock Alert -->
+    <div class="card">
+      <div class="card-header">
+        <h3>⚡ Low Stock Alerts</h3>
+        <a href="/tablets?filter=low" class="btn btn-ghost btn-sm">View All</a>
+      </div>
+      <div class="alert-list" id="low-stock-list">
+        <div class="empty-state" style="padding:30px 24px;">
+          <div class="empty-icon" style="font-size:32px;margin-bottom:10px;">⏳</div>
+          <p>Loading…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expiring Soon -->
+    <div class="card">
+      <div class="card-header">
+        <h3>🕐 Expiring Soon / Expired</h3>
+        <a href="/tablets?filter=expiry" class="btn btn-ghost btn-sm">View All</a>
+      </div>
+      <div class="alert-list" id="expiry-list">
+        <div class="empty-state" style="padding:30px 24px;">
+          <div class="empty-icon" style="font-size:32px;margin-bottom:10px;">⏳</div>
+          <p>Loading…</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Recently Added -->
+  <div class="card">
+    <div class="card-header">
+      <h3>🕓 Recently Added</h3>
+      <a href="/tablets" class="btn btn-ghost btn-sm">View All →</a>
+    </div>
+    <div id="recent-list">
+      <div class="empty-state" style="padding:30px 24px;">
+        <div class="empty-icon" style="font-size:32px;margin-bottom:10px;">⏳</div>
+        <p>Loading…</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

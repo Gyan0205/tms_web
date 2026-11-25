@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% block title %}My Tablets — TMS{% endblock %}
+
+{% block content %}
+<!-- ── Topbar ──────────────────────────────────────────────────────────────── -->
+<div class="topbar">
+  <div class="topbar-title">
+    <h1>💊 My Tablets</h1>
+    <p id="tablet-count">Loading…</p>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-primary" id="add-btn">＋ Add Tablet</button>
+  </div>
+</div>
+
+<!-- ── Page Content ────────────────────────────────────────────────────────── -->
+<div class="page-content">
+
+  <!-- Toolbar -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header" style="flex-wrap:wrap;gap:12px;">
+      <div class="toolbar" style="flex:1;">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" class="input-search"
+            placeholder="Search by name, generic name, category…" />
+        </div>
+        <select id="category-filter" class="filter-select">
+          <option value="">All Categories</option>
+        </select>
+        <select id="stock-filter" class="filter-select">
+          <option value="">All Stock Levels</option>
+          <option value="out">Out of Stock</option>
+          <option value="critical">Critical (≤5)</option>
+          <option value="low">Low (≤10)</option>
+          <option value="good">Good</option>
+        </select>
+        <select id="expiry-filter" class="filter-select">
+          <option value="">All Expiry</option>
+          <option value="expired">Expired</option>
+          <option value="expiring_soon">Expiring Soon</option>
+          <option value="good">Valid</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <div class="table-wrap">
+      <table id="tablets-table">
+        <thead>
+          <tr>
+            <th>Tablet Name</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th>Expiry Date</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tablets-tbody">
+          <tr>
+            <td colspan="6">
+              <div class="empty-state" style="padding:40px 24px;">
+                <div class="empty-icon">⏳</div>
+                <p>Loading your tablets…</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State (shown via JS) -->
+    <div id="empty-state" style="display:none;">
+      <div class="empty-state">
+        <div class="empty-icon">💊</div>
+        <strong>No tablets found</strong>
+        <p>Click <strong>+ Add Tablet</strong> to track your first medicine.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- Add / Edit Tablet Modal                                                   -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="tablet-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">💊 Add New Tablet</h2>
+      <button class="modal-close" onclick="closeModal('tablet-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="tablet-form" novalidate>
+        <input type="hidden" id="form-id" />
+        <div class="form-grid">
+
+          <div class="form-group full-width">
+            <label for="form-name">Tablet Name <span style="color:var(--danger)">*</span></label>
+            <input type="text" id="form-name" placeholder="e.g., Paracetamol 500mg" required autocomplete="off" />
+          </div>
+
+          <div class="form-group">
+            <label for="form-generic">Generic / Chemical Name</label>
+            <input type="text" id="form-generic" placeholder="e.g., Acetaminophen" autocomplete="off" />
+          </div>
+
+          <div class="form-group">
+            <label for="form-category">Category</label>
+            <select id="form-category">
+              <option value="">— Select category —</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="form-quantity">Quantity (tablets / units)</label>
+            <input type="number" id="form-quantity" placeholder="e.g., 20" min="0" value="0" />
+          </div>
+
+          <div class="form-group">
+            <label for="form-expiry">Expiry (Month &amp; Year)</label>
+            <input type="month" id="form-expiry" />
+          </div>
+
+          <div class="form-group full-width">
+            <label for="form-notes">Notes</label>
+            <textarea id="form-notes" placeholder="e.g., Take after meals · 1 strip of 10"></textarea>
+          </div>
+
+        </div><!-- /form-grid -->
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" id="cancel-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="save-btn">Save Tablet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- Delete Confirmation Modal                                                  -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <h2>🗑️ Delete Tablet</h2>
+      <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:20px;">
+        Are you sure you want to delete
+        <strong style="color:var(--text-primary)" id="delete-name"></strong>?
+        This action cannot be undone.
+      </p>
+      <div class="form-actions">
+        <button class="btn btn-ghost" id="cancel-delete-btn">Cancel</button>
+        <button class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- Consume Confirmation Modal                                                 -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="consume-modal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <h2>💊 Consume Tablet</h2>
+      <button class="modal-close" onclick="closeModal('consume-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">
+        Subtract 1 medicine of
+        <strong style="color:var(--text-primary)" id="consume-name"></strong>?
+      </p>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">
+        Current stock: <strong id="consume-current-qty"></strong> unit(s) &rarr; New stock: <strong
+          id="consume-next-qty" style="color:var(--accent)"></strong> unit(s).
+      </p>
+      <div class="form-actions">
+        <button class="btn btn-ghost" id="cancel-consume-btn">Cancel</button>
+        <button class="btn btn-primary" id="confirm-consume-btn">Yes, Consume 1</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/tablets.js') }}"></script>
+{% endblock %}

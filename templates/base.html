@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}TMS — Home Tablets Manager{% endblock %}</title>
+  <meta name="description" content="Track and manage your home medicine tablets — quantities, expiry dates, and categories." />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>" />
+</head>
+<body>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">💊</div>
+    <h2>TMS</h2>
+    <p>Home Tablets Manager</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Navigation</div>
+    <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}" id="nav-dashboard">
+      <span class="nav-icon">🏠</span>
+      <span>Dashboard</span>
+    </a>
+    <a href="/tablets" class="nav-item {% if request.path == '/tablets' %}active{% endif %}" id="nav-tablets">
+      <span class="nav-icon">💊</span>
+      <span>My Tablets</span>
+    </a>
+    <a href="/prescription" class="nav-item {% if request.path == '/prescription' %}active{% endif %}" id="nav-prescription">
+      <span class="nav-icon">📋</span>
+      <span>Prescription</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <p>TMS v1.0 · Local App</p>
+  </div>
+</aside>
+
+<!-- ── Main ───────────────────────────────────────────────────────────────── -->
+<main class="main">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ── Toast container ────────────────────────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<!-- ── Shared JS ──────────────────────────────────────────────────────────── -->
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
